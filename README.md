@@ -40,3 +40,4 @@ It should just run normally with `love .` or `lovec .`
 ## Screenshots
 ![Screenshot of app](/assets/ss/ss1.png)
 ![Screenshot of app](/assets/ss/ss2.png)
+![Screenshot of app](/assets/ss/ss3.png)

@@ -78,8 +78,8 @@ local function secondsToTime(time)
     return string.format("%02d:%02d:%02d", hours, minutes, seconds)
 end
 
-local songList = json.decode(love.filesystem.read("list.json"))
-local rawLyrics = json.decode(love.filesystem.read("lyrics.json"))
+local songList = json.decode(love.filesystem.read("list.json") or "[]")
+local rawLyrics = json.decode(love.filesystem.read("lyrics.json") or "{}")
 
 for curIndex, song in ipairs(songList) do
     local cleanName = (song.safeFull or song.name)

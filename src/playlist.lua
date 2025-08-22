@@ -346,7 +346,7 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
             play()
         end
 
-        if not isRendering then
+        if not isRendering and song then
             if isPaused then
                 song.audio:pause()
             else

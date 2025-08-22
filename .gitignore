@@ -2,9 +2,10 @@
 /music
 /art
 /node_modules
-package.json
 package-lock.json
 pnpm-lock.yaml
 list.json
 lyrics.json
 lyricsn.json
+.env
+/the

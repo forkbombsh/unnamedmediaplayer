@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+		"dotenv": "^17.2.1",
+		"lrclib-api": "^2.0.0"
+	}
+}

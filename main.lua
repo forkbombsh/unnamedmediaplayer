@@ -9,9 +9,9 @@ love.graphics.setLineWidth(4)
 
 local triangleImg = love.graphics.newImage("assets/triangle.png")
 
-local arialSmaBold = love.graphics.newFont("assets/arial/ARIALBD 1.TTF", 20)
-local arialBigBold = love.graphics.newFont("assets/arial/ARIALBD 1.TTF", 40)
-local arialMedBold = love.graphics.newFont("assets/arial/ARIALBD 1.TTF", 30)
+local arialSmaBold = love.graphics.newFont("assets/ARIALBD 1.TTF", 20)
+local arialBigBold = love.graphics.newFont("assets/ARIALBD 1.TTF", 40)
+local arialMedBold = love.graphics.newFont("assets/ARIALBD 1.TTF", 30)
 local notoSansTCFallbackBigBold = love.graphics.newFont("assets/NotoSansTC-Bold.ttf", 40)
 local notoSansTCFallbackMedBold = love.graphics.newFont("assets/NotoSansTC-Bold.ttf", 30)
 local notoSansTCFallbackSmallBold = love.graphics.newFont("assets/NotoSansTC-Bold.ttf", 20)

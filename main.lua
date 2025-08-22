@@ -31,6 +31,8 @@ local songs = {}
 local thumbnails = {}
 local json = require("src.lib.json")
 
+local config = json.decode(love.filesystem.read("config.json"))
+
 local function getAverageColor(imageData)
     local width, height = imageData:getDimensions()
     local rSum, gSum, bSum = 0, 0, 0
@@ -207,7 +209,7 @@ function love.quit()
 end
 
 require("src.playlist")(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arialMedBold, arialSmaBold,
-    triangleImg, isRendering)
+    triangleImg, isRendering, config)
 
 while isRendering do
     love.event.pump()

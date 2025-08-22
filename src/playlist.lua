@@ -1,7 +1,7 @@
 local flux = require("src.lib.flux")
 
 return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleImg,
-                isRendering)
+                isRendering, config)
     collectgarbage("collect")
 
     local isPaused = false
@@ -12,6 +12,7 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
     local songSelectScroll = 0
     local justClickedSearch = false
     local playedSong = false
+    local justPlayedSong = false
 
     local function getCurrentSong(t)
         if #songs == 0 then
@@ -90,6 +91,7 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
         if time < 0 then time = 0 end
         if time > totalTime then time = totalTime end
         play()
+        justPlayedSong = true
     end
 
     play()
@@ -274,6 +276,8 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
 
     local abt = { 0, 0, 0 }
 
+    local oldSongName = ""
+
     function renderer.update(dt)
         if not isPaused then
             time = time + dt
@@ -354,6 +358,17 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
             end
         end
 
+        if oldSongName ~= song.name and config.randomSongs then
+            if justPlayedSong then
+                oldSongName = song.name
+            else
+                local randomSong = songs[love.math.random(#songs)]
+                oldSongName = randomSong.name
+                time = randomSong.starting_time
+                play()
+            end
+        end
+
         if curSongSearch then
             if songSelectIndex > #curSongSearch then
                 songSelectIndex = #curSongSearch
@@ -361,6 +376,7 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
         end
 
         flux.update(dt)
+        justPlayedSong = false
     end
 
     function renderer.draw()
@@ -554,6 +570,7 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
         songSelectIndex = 1
         songSelectScroll = 0
         playedSong = true
+        justPlayedSong = true
         curSongSearch = searchSongs(searchText)
     end
 
@@ -565,6 +582,7 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
                 if button == 1 then
                     local ww = WindowWidth
                     time = (x / ww) * totalTime
+                    justPlayedSong = true
                     play()
                 end
             else
@@ -582,6 +600,7 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
             end
             local ww = WindowWidth
             time = (x / ww) * totalTime
+            justPlayedSong = true
             play()
         end
 

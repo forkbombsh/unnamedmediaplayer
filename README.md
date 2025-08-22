@@ -7,6 +7,8 @@ Supports:
  - Searching via `/`
  - Rendering to a video
  - Lyrics via lrclib
+ - Being very lightweight
+ - random song every time a song finishes, configure in config.json
 
 Requirements: 
  - LÖVE 12.0

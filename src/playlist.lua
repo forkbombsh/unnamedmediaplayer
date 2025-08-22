@@ -1,4 +1,4 @@
-local flux = require("src.flux")
+local flux = require("src.lib.flux")
 
 return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleImg,
                 isRendering)

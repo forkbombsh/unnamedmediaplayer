@@ -29,7 +29,7 @@ arialSmaBold:setFallbacks(notoEmojiFallbackSmallBold, notoSansTCFallbackSmallBol
 local totalTime = 0
 local songs = {}
 local thumbnails = {}
-local json = require("src.json")
+local json = require("src.lib.json")
 
 local function getAverageColor(imageData)
     local width, height = imageData:getDimensions()

@@ -1,5 +1,5 @@
 const fs = require("fs");
-const list = require("./list.json");
+const list = require("../list.json");
 
 function shuffle(array) {
   let currentIndex = array.length;

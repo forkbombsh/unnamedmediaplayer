@@ -15,6 +15,7 @@ Requirements:
  - Node.js
  - Spotdl
  - FFmpeg
+ - yt-dlp
 
 ## Downloading songs
 
@@ -32,6 +33,8 @@ Then just run `node js/addSong.js (your song name)`
 This will download the song using spotdl and ffmpeg, make sure you have them
 
 It will also try to find lyrics and put them in lyrics.json
+
+if it errors then try again and again it should work eventually
 
 ## Shuffling list
 Run `node js/shuffleList.js` if list.json exists

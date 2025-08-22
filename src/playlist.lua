@@ -342,7 +342,7 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
                 play()
             else
                 local audioPos = currentPlaying.audio:tell()
-                if math.abs(audioPos - relativePos) > 0.1 then
+                if math.abs(audioPos - relativePos) > 0.5 then
                     currentPlaying.audio:seek(relativePos)
                 end
             end
@@ -557,7 +557,8 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
         if #curSongSearch == 1 then
             song = curSongSearch[1]
         elseif #curSongSearch > 1 then
-            song = curSongSearch[songSelectIndex + songSelectScroll]
+            local idx = math.max(1, math.min(#curSongSearch, songSelectIndex + songSelectScroll))
+            song = curSongSearch[idx]
         else
             return
         end

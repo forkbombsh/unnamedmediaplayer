@@ -76,7 +76,7 @@ async function searchTrack(query) {
 
         console.log("Spotify Link:", track.external_urls.spotify);
         console.log("Downloading...");
-        execSync(`spotdl "${track.external_urls.spotify}" --format wav --output "${folder}${safeArtists} - ${safeName}.{output-ext}"`, { stdio: "inherit" });
+        execSync(`spotdl "${track.external_urls.spotify}" --format wav --output "${folder}${safeArtists} - ${safeName}.{output-ext}" --log-level DEBUG`, { stdio: "inherit" });
 
         console.log("Extracting thumbnail...");
         const probe = execSync(`ffprobe -v error -show_streams -select_streams v "${folder}${file}"`).toString();

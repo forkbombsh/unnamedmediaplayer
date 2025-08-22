@@ -557,13 +557,6 @@ return function(secondsToTime, totalTime, songs, thumbnails, arialBigBold, arial
         curSongSearch = searchSongs(searchText)
     end
 
-    function renderer.updateStuff(totalTime_, songs_, thumbnails_)
-        print("Updating stuff")
-        totalTime = totalTime_
-        songs = songs_
-        thumbnails = thumbnails_
-    end
-
     if not isRendering then
         love.draw = renderer.draw
         love.update = renderer.update

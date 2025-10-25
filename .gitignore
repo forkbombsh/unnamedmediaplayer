@@ -1,0 +1,16 @@
+/a
+/music
+/art
+/songs
+/node_modules
+package-lock.json
+pnpm-lock.yaml
+list.json
+lyrics.json
+lyricsn.json
+.env
+/the
+ffmpeg.exe
+ffplay.exe
+ffprobe.exe
+*.exe

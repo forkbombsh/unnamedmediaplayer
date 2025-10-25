@@ -1,0 +1,6 @@
+{
+    "Lua.diagnostics.disable": [
+        "cast-local-type",
+        "lowercase-global"
+    ]
+}

@@ -1,29 +1,40 @@
 {
     "randomSongs": false,
-    "instantAlbumArtResize": false,
+    "instantAlbumArtResize": true,
     "albumResizeLyricsBuffer": 0.5,
     "albumResizeTime": 1,
-    "colourMatchesAlbumArt": true,
-    "outlineAroundAlbumArt": true,
+    "colourMatchesAlbumArt": false,
     "showAlbumArt": true,
+    "showLyrics": false,
+    "albumArtResizeWithLyrics": false,
+    "showNextSong": false,
+    "showPrevSong": false,
+    "showNextLyric": false,
+    "showPrevLyric": false,
+    "drawUI": false,
+    "albumArtFullscreen": true,
     "colour": [
         0.5,
         0,
-        0
+        0,
+        1
     ],
     "borderColour": [
         0.6,
+        0,
         0,
         0
     ],
     "lyricsColour": [
         1,
         1,
-        1
+        1,
+        0
     ],
     "albumArtBorderColour": [
-        1,
-        1,
-        1
+        0,
+        0,
+        0,
+        0
     ]
 }

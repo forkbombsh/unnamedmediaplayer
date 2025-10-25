@@ -308,10 +308,10 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
             local screenWidth = WindowWidth
             local yoff = 30
             local ty = WindowHeight - arialMedBold:getHeight() - (106 - yoff)
-            local topBound = arialBigBold:getHeight() + arialMedBold:getHeight() + 35
+            local topBound = (GlobalConfig.albumArtFullscreen and 0 or arialBigBold:getHeight() + arialMedBold:getHeight() + 35)
             local bottomBound = ty - 10
-            local verticalSpace = bottomBound - topBound
-            local size = math.min(screenWidth, verticalSpace) * 0.8
+            local verticalSpace = GlobalConfig.albumArtFullscreen and WindowHeight or bottomBound - topBound
+            local size = math.min(screenWidth, verticalSpace) * (GlobalConfig.albumArtFullscreen and 1 or 0.8)
             local x = ((screenWidth - size) / 2)
             local y = topBound + (verticalSpace - size) / 2
 
@@ -326,12 +326,16 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
                 nabx, naby, nabs = x, y, size
             end
 
-            if currentLyric == "" and (nextLyricTime and nextLyricTime - relPos < GlobalConfig.albumResizeLyricsBuffer or false) and nextLyric ~= "" then
-                small()
-            elseif currentLyric == "" then
-                big()
-            elseif currentLyric ~= "" then
-                small()
+            if GlobalConfig.albumArtResizeWithLyrics then
+                if currentLyric == "" and (nextLyricTime and nextLyricTime - relPos < GlobalConfig.albumResizeLyricsBuffer or false) and nextLyric ~= "" then
+                    small()
+                elseif currentLyric == "" then
+                    big()
+                elseif currentLyric ~= "" then
+                    small()
+                else
+                    big()
+                end
             else
                 big()
             end
@@ -398,6 +402,9 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
     end
 
     local function drawUI(songName, curSongTime, songLength, nextStr, prevStr, songIdx, yoff, ty, song)
+        if not GlobalConfig.drawUI then
+            return
+        end
         local colour = song.colour
         local lighterColour = song.lighterColour
         if not GlobalConfig.colourMatchesAlbumArt then
@@ -455,7 +462,7 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
 
         love.graphics.setColor(1, 1, 1)
 
-        if songIdx > 1 then
+        if GlobalConfig.showPrevSong and songIdx > 1 then
             love.graphics.draw(triangleImg, 40,
                 WindowHeight - (triangleImg:getHeight() * 0.25) - 110 + yoff,
                 math.pi / 2, 0.25,
@@ -465,7 +472,7 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
                 ty)
         end
 
-        if nextStr ~= songName then
+        if GlobalConfig.showNextSong and nextStr ~= songName then
             drawTextWithOutlineRealtimef(cutString(nextStr, 40), arialMedBold, -60,
                 ty,
                 WindowWidth, "right")
@@ -548,54 +555,54 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
                 love.graphics.setColor(1, 1, 1, 1)
                 love.graphics.draw(curThumbnail, abx, aby, 0, abs / curThumbnail:getWidth(),
                     abs / curThumbnail:getHeight())
-                if GlobalConfig.outlineAroundAlbumArt then
-                    if GlobalConfig.colourMatchesAlbumArt then
-                        love.graphics.setColor(song.lighterColour)
-                    else
-                        love.graphics.setColor(GlobalConfig.albumArtBorderColour)
-                    end
-                    love.graphics.rectangle("line", abx, aby, abs, abs)
+                if GlobalConfig.colourMatchesAlbumArt then
+                    love.graphics.setColor(song.lighterColour)
+                else
+                    love.graphics.setColor(GlobalConfig.albumArtBorderColour)
                 end
+                love.graphics.rectangle("line", abx, aby, abs, abs)
             end
 
             love.graphics.setColor(1, 1, 1, 1)
 
-            local currentLyric = getCurrentLyric(song)
+            if GlobalConfig.showLyrics then
+                local currentLyric = getCurrentLyric(song)
 
-            if #song.lyrics > 0 and currentLyric ~= "" then
-                local lyricsColour = GlobalConfig.lyricsColour
-                local prevLyric = getPrevLyric(song)
-                local nextLyric = getNextLyric(song)
+                if #song.lyrics > 0 and currentLyric ~= "" then
+                    local lyricsColour = GlobalConfig.lyricsColour
+                    local prevLyric = getPrevLyric(song)
+                    local nextLyric = getNextLyric(song)
 
-                local lineHeight = arialBigBold:getHeight()
-                local wrapWidth = WindowWidth / 1.5
+                    local lineHeight = arialBigBold:getHeight()
+                    local wrapWidth = WindowWidth / 1.5
 
-                local _, wrappedCurrent = arialBigBold:getWrap(currentLyric, wrapWidth)
-                for j, line in ipairs(wrappedCurrent) do
-                    local y = WindowHeight / 2 + (j - 1) * lineHeight
-                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
-                    drawTextWithOutline(line, arialBigBold, WindowWidth / 2 - arialBigBold:getWidth(line) / 2, y)
-                end
-
-                if prevLyric and prevLyric ~= song.lyrics[#song.lyrics].text then
-                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 0.25)
-                    local _, wrappedPrev = arialBigBold:getWrap(prevLyric, wrapWidth)
-                    for j = 1, #wrappedPrev do
-                        local line = wrappedPrev[#wrappedPrev - j + 1]
-                        local y = WindowHeight / 2 - j * lineHeight
+                    local _, wrappedCurrent = arialBigBold:getWrap(currentLyric, wrapWidth)
+                    for j, line in ipairs(wrappedCurrent) do
+                        local y = WindowHeight / 2 + (j - 1) * lineHeight
+                        love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
                         drawTextWithOutline(line, arialBigBold, WindowWidth / 2 - arialBigBold:getWidth(line) / 2, y)
                     end
-                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
-                end
 
-                if nextLyric then
-                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 0.5)
-                    local _, wrappedNext = arialBigBold:getWrap(nextLyric, wrapWidth)
-                    for j, line in ipairs(wrappedNext) do
-                        local y = WindowHeight / 2 + #wrappedCurrent * lineHeight + (j - 1) * lineHeight
-                        drawTextWithOutline(line, arialBigBold, WindowWidth / 2 - arialBigBold:getWidth(line) / 2, y)
+                    if GlobalConfig.showPrevLyric and prevLyric and prevLyric ~= song.lyrics[#song.lyrics].text then
+                        love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 0.25)
+                        local _, wrappedPrev = arialBigBold:getWrap(prevLyric, wrapWidth)
+                        for j = 1, #wrappedPrev do
+                            local line = wrappedPrev[#wrappedPrev - j + 1]
+                            local y = WindowHeight / 2 - j * lineHeight
+                            drawTextWithOutline(line, arialBigBold, WindowWidth / 2 - arialBigBold:getWidth(line) / 2, y)
+                        end
+                        love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
                     end
-                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
+
+                    if GlobalConfig.showNextLyric and nextLyric then
+                        love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 0.5)
+                        local _, wrappedNext = arialBigBold:getWrap(nextLyric, wrapWidth)
+                        for j, line in ipairs(wrappedNext) do
+                            local y = WindowHeight / 2 + #wrappedCurrent * lineHeight + (j - 1) * lineHeight
+                            drawTextWithOutline(line, arialBigBold, WindowWidth / 2 - arialBigBold:getWidth(line) / 2, y)
+                        end
+                        love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
+                    end
                 end
             end
             love.graphics.setColor(1, 1, 1, 1)

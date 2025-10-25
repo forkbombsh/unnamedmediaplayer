@@ -1,7 +1,7 @@
 local flux = require("src.lib.flux")
 
 return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleImg,
-                isRendering, config)
+                isRendering)
     collectgarbage("collect")
 
     local isPaused = false
@@ -219,6 +219,14 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
         love.graphics.setColor(r, g, b, a)
     end
 
+    local function getCurrentLyricIndex(song)
+        for i, v in ipairs(song.lyrics) do
+            if song.audio:tell() >= v.time then
+                return i
+            end
+        end
+    end
+
     local function getCurrentLyric(song)
         local text = ""
         for i, v in ipairs(song.lyrics) do
@@ -318,7 +326,7 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
                 nabx, naby, nabs = x, y, size
             end
 
-            if currentLyric == "" and (nextLyricTime and nextLyricTime - relPos < 0.5 or false) and nextLyric ~= "" then
+            if currentLyric == "" and (nextLyricTime and nextLyricTime - relPos < GlobalConfig.albumResizeLyricsBuffer or false) and nextLyric ~= "" then
                 small()
             elseif currentLyric == "" then
                 big()
@@ -330,7 +338,11 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
 
             local abx, aby, abs = abt[1], abt[2], abt[3]
             if nabx ~= abx or naby ~= aby or nabs ~= abs then
-                flux.to(abt, 1, { nabx, naby, nabs }):ease("quartout")
+                if GlobalConfig.instantAlbumArtResize then
+                    abt[1], abt[2], abt[3] = nabx, naby, nabs
+                else
+                    flux.to(abt, GlobalConfig.albumResizeTime, { nabx, naby, nabs }):ease("quartout")
+                end
             end
         end
 
@@ -364,7 +376,7 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
             end
         end
 
-        if song and oldSongName ~= song.name and config.randomSongs then
+        if song and oldSongName ~= song.name and GlobalConfig.randomSongs then
             if justPlayedSong then
                 oldSongName = song.name
             else
@@ -386,7 +398,13 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
     end
 
     local function drawUI(songName, curSongTime, songLength, nextStr, prevStr, songIdx, yoff, ty, song)
-        love.graphics.setColor(song.colour)
+        local colour = song.colour
+        local lighterColour = song.lighterColour
+        if not GlobalConfig.colourMatchesAlbumArt then
+            colour = GlobalConfig.colour or { 0.5, 0.5, 0.5 }
+            lighterColour = { colour[1] * 1.25, colour[2] * 1.25, colour[3] * 1.25 }
+        end
+        love.graphics.setColor(colour)
         love.graphics.rectangle("fill", 0, 0, WindowWidth, WindowHeight)
         love.graphics.setColor(0, 0, 0, 0.5)
         love.graphics.rectangle("fill", 0, 0, WindowWidth,
@@ -425,7 +443,11 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
             "center"
         )
 
-        love.graphics.setColor(song.lighterColour)
+        if not GlobalConfig.colourMatchesAlbumArt then
+            love.graphics.setColor(GlobalConfig.borderColour)
+        else
+            love.graphics.setColor(lighterColour)
+        end
         love.graphics.rectangle("fill", 0, arialBigBold:getHeight() + arialMedBold:getHeight() + 35,
             WindowWidth, 10)
 
@@ -519,20 +541,29 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
         if song then
             drawUI(song.actualName, song.audio:tell(), song.audio:getDuration(), upNext.actualName, prev
                 .actualName, currentIndex, yoff, ty, song)
-            local curThumbnail = thumbnails[song.index]
 
-            local abx, aby, abs = abt[1], abt[2], abt[3]
-            love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.draw(curThumbnail, abx, aby, 0, abs / curThumbnail:getWidth(),
-                abs / curThumbnail:getHeight())
-            love.graphics.setColor(song.lighterColour)
-            love.graphics.rectangle("line", abx, aby, abs, abs)
-            love.graphics.setColor(1, 1, 1, 1)
+            if GlobalConfig.showAlbumArt then
+                local curThumbnail = thumbnails[song.index]
+                local abx, aby, abs = abt[1], abt[2], abt[3]
+                love.graphics.setColor(1, 1, 1, 1)
+                love.graphics.draw(curThumbnail, abx, aby, 0, abs / curThumbnail:getWidth(),
+                    abs / curThumbnail:getHeight())
+                if GlobalConfig.outlineAroundAlbumArt then
+                    if GlobalConfig.colourMatchesAlbumArt then
+                        love.graphics.setColor(song.lighterColour)
+                    else
+                        love.graphics.setColor(GlobalConfig.albumArtBorderColour)
+                    end
+                    love.graphics.rectangle("line", abx, aby, abs, abs)
+                end
+            end
 
             love.graphics.setColor(1, 1, 1, 1)
+
             local currentLyric = getCurrentLyric(song)
 
             if #song.lyrics > 0 and currentLyric ~= "" then
+                local lyricsColour = GlobalConfig.lyricsColour
                 local prevLyric = getPrevLyric(song)
                 local nextLyric = getNextLyric(song)
 
@@ -542,28 +573,29 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
                 local _, wrappedCurrent = arialBigBold:getWrap(currentLyric, wrapWidth)
                 for j, line in ipairs(wrappedCurrent) do
                     local y = WindowHeight / 2 + (j - 1) * lineHeight
+                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
                     drawTextWithOutline(line, arialBigBold, WindowWidth / 2 - arialBigBold:getWidth(line) / 2, y)
                 end
 
                 if prevLyric and prevLyric ~= song.lyrics[#song.lyrics].text then
-                    love.graphics.setColor(1, 1, 1, 0.25)
+                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 0.25)
                     local _, wrappedPrev = arialBigBold:getWrap(prevLyric, wrapWidth)
                     for j = 1, #wrappedPrev do
                         local line = wrappedPrev[#wrappedPrev - j + 1]
                         local y = WindowHeight / 2 - j * lineHeight
                         drawTextWithOutline(line, arialBigBold, WindowWidth / 2 - arialBigBold:getWidth(line) / 2, y)
                     end
-                    love.graphics.setColor(1, 1, 1, 1)
+                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
                 end
 
                 if nextLyric then
-                    love.graphics.setColor(1, 1, 1, 0.5)
+                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 0.5)
                     local _, wrappedNext = arialBigBold:getWrap(nextLyric, wrapWidth)
                     for j, line in ipairs(wrappedNext) do
                         local y = WindowHeight / 2 + #wrappedCurrent * lineHeight + (j - 1) * lineHeight
                         drawTextWithOutline(line, arialBigBold, WindowWidth / 2 - arialBigBold:getWidth(line) / 2, y)
                     end
-                    love.graphics.setColor(1, 1, 1, 1)
+                    love.graphics.setColor(lyricsColour[1], lyricsColour[2], lyricsColour[3], 1)
                 end
             end
             love.graphics.setColor(1, 1, 1, 1)
@@ -658,6 +690,8 @@ return function(thumbnails, arialBigBold, arialMedBold, arialSmaBold, triangleIm
                     addingSong = true
                     addSongText = ""
                     love.keyboard.setTextInput(addingSong)
+                elseif key == "r" then
+                    GlobalConfig = json.decode(love.filesystem.read("config.json"))
                 end
             end
             if searching then

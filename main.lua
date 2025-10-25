@@ -71,11 +71,11 @@ arialSmaBold:setFallbacks(notoEmojiFallbackSmallBold, notoSansTCFallbackSmallBol
 local totalTime = 0
 local songs = {}
 local thumbnails = {}
-local json = require("src.lib.json")
+json = require("src.lib.json")
 local https = require("https")
 local nativefs = require("src.lib.nativefs")
 
-local config = json.decode(love.filesystem.read("config.json"))
+GlobalConfig = json.decode(love.filesystem.read("config.json"))
 
 function string.trim(s)
     return s:match("^%s*(.-)%s*$")
@@ -156,7 +156,7 @@ end
 local isRendering = false
 
 require("src.playlist")(thumbnails, arialBigBold, arialMedBold, arialSmaBold,
-    triangleImg, isRendering, config)
+    triangleImg, isRendering)
 
 local curIndex = 0
 

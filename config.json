@@ -1,3 +1,29 @@
 {
-    "randomSongs": false
+    "randomSongs": false,
+    "instantAlbumArtResize": false,
+    "albumResizeLyricsBuffer": 0.5,
+    "albumResizeTime": 1,
+    "colourMatchesAlbumArt": true,
+    "outlineAroundAlbumArt": true,
+    "showAlbumArt": true,
+    "colour": [
+        0.5,
+        0,
+        0
+    ],
+    "borderColour": [
+        0.6,
+        0,
+        0
+    ],
+    "lyricsColour": [
+        1,
+        1,
+        1
+    ],
+    "albumArtBorderColour": [
+        1,
+        1,
+        1
+    ]
 }
